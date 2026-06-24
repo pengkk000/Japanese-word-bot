@@ -1,19 +1,12 @@
 import requests
+import re
 
 url = "https://wquiz.dict.naver.com/jakodict/today/words.dict"
 
 html = requests.get(url).text
 
-for keyword in [
-    "list_html",
-    "word_item",
-    "date_label",
-    "todayWord",
-    "quizData",
-    "calendarData",
-]:
-    print("=" * 30)
-    print(keyword)
-    print(keyword in html)
+for line in html.split("\n"):
+    if "api" in line.lower():
+        print(line)
 
-raise Exception("검색 완료")
+raise Exception("API 검색 완료")
