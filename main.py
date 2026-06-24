@@ -1,12 +1,13 @@
 import requests
-import re
 
-url = "https://wquiz.dict.naver.com/jakodict/today/words.dict"
+url = "https://search.naver.com/search.naver?where=nexearch&query=오늘의 일본어"
 
-html = requests.get(url).text
+headers = {
+    "User-Agent": "Mozilla/5.0"
+}
 
-for line in html.split("\n"):
-    if "api" in line.lower():
-        print(line)
+html = requests.get(url, headers=headers).text
 
-raise Exception("API 검색 완료")
+print(html[:10000])
+
+raise Exception("확인")
