@@ -3,7 +3,7 @@ name: Update Japanese Words
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 17 * * *'
 
 jobs:
   update:
