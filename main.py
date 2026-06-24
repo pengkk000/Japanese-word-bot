@@ -213,15 +213,23 @@ for w in words:
             },
 
             "태그": {
-                "select": {
-                    "name": w["level"]
-                }
+                "rich_text": [
+                    {
+                        "text": {
+                            "content": w["level"]
+                        }
+                    }
+                ]
             },
 
             "날짜": {
-                "date": {
-                    "start": w["date"]
-                }
+                "rich_text": [
+                    {
+                        "text": {
+                            "content": w["date"]
+                        }
+                    }
+                ]
             }
         }
     )
