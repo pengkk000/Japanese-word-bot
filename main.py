@@ -1,6 +1,18 @@
+import os
 import requests
 from bs4 import BeautifulSoup
 from pykakasi import kakasi
+from notion_client import Client
+from datetime import datetime
+
+# -------------------------
+# Notion 설정
+# -------------------------
+
+NOTION_TOKEN = os.environ["NOTION_TOKEN"]
+DATABASE_ID = os.environ["DATABASE_ID"]
+
+notion = Client(auth=NOTION_TOKEN)
 
 # -------------------------
 # 일본어 → 로마자
@@ -87,11 +99,10 @@ def kana_to_korean(text):
 
     result = text
 
-    # 긴 문자열부터 변환
     for jp in sorted(kana_map.keys(), key=len, reverse=True):
         result = result.replace(jp, kana_map[jp])
 
-    # 가타카나 장음기호
+    # 장음 처리
     result = result.replace("ー", "우")
 
     return result
@@ -110,13 +121,27 @@ html = requests.get(
 
 soup = BeautifulSoup(html, "html.parser")
 
-# 페이지 날짜 읽기
+# -------------------------
+# 날짜 읽기
+# -------------------------
+
 date_el = soup.select_one(".showDate")
 
 if date_el:
-    page_date = date_el.get("value", "").strip()
+
+    raw_date = date_el.get("value", "").strip()
+
+    month = int(raw_date.split("월")[0])
+    day = int(raw_date.split("월")[1].replace("일", "").strip())
+
+    page_date = f"{datetime.now().year}-{month:02d}-{day:02d}"
+
 else:
-    page_date = ""
+    page_date = datetime.now().strftime("%Y-%m-%d")
+
+# -------------------------
+# 단어 추출
+# -------------------------
 
 cards = soup.select(".word_list .word_card")
 
@@ -146,5 +171,59 @@ for card in cards:
         "date": page_date
     })
 
+# -------------------------
+# Notion 등록
+# -------------------------
+
 for w in words:
+
     print(w)
+
+    notion.pages.create(
+        parent={"database_id": DATABASE_ID},
+        properties={
+            "단어": {
+                "title": [
+                    {
+                        "text": {
+                            "content": w["word"]
+                        }
+                    }
+                ]
+            },
+
+            "읽는 법": {
+                "rich_text": [
+                    {
+                        "text": {
+                            "content": w["reading"]
+                        }
+                    }
+                ]
+            },
+
+            "뜻": {
+                "rich_text": [
+                    {
+                        "text": {
+                            "content": w["meaning"]
+                        }
+                    }
+                ]
+            },
+
+            "태그": {
+                "select": {
+                    "name": w["level"]
+                }
+            },
+
+            "날짜": {
+                "date": {
+                    "start": w["date"]
+                }
+            }
+        }
+    )
+
+    print("노션 등록 완료:", w["word"])
