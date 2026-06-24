@@ -7,11 +7,10 @@ html = requests.get(
     headers={"User-Agent": "Mozilla/5.0"}
 ).text
 
-idx = html.find('<div class="word"')
+idx = html.find("だんせい")
 
 print("idx =", idx)
 
-if idx != -1:
-    print(html[idx:idx+3000])
+print(html[idx-1500:idx+3000])
 
-raise Exception("확인")
+raise Exception("주변 확인")
