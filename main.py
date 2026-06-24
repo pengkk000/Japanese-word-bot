@@ -1,20 +1,32 @@
 import requests
-import re
+from bs4 import BeautifulSoup
 
-url = "https://wquiz.dict.naver.com/jakodict/today/words.dict?targetDate=20260625"
+url = "https://wquiz.dict.naver.com/jakodict/today/words.dict"
 
 html = requests.get(
     url,
     headers={"User-Agent": "Mozilla/5.0"}
 ).text
 
-matches = sorted(set(re.findall(r'[\w/\-]+\.dict(?:\?[^"\']*)?', html)))
+soup = BeautifulSoup(html, "html.parser")
 
-print("찾은 .dict URL 후보들:")
-print("=" * 50)
+cards = soup.select(".word_list .word_card")
 
-for m in matches:
-    print(m)
+for idx, card in enumerate(cards, 1):
 
-print("=" * 50)
-print("개수:", len(matches))
+    word = "".join(
+        span.get_text(strip=True)
+        for span in card.select(".word_card_title .letter")
+    )
+
+    meaning_el = card.select_one(".mean_text")
+    level_el = card.select_one(".label")
+
+    meaning = meaning_el.get_text(strip=True) if meaning_el else ""
+    level = level_el.get_text(strip=True) if level_el else ""
+
+    print(f"[{idx}]")
+    print("단어 :", word)
+    print("뜻   :", meaning)
+    print("레벨 :", level)
+    print()
