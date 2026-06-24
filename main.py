@@ -14,11 +14,9 @@ url = "https://wquiz.dict.naver.com/jakodict/today/words.dict"
 
 html = requests.get(url).text
 
-matches = re.findall(
-    r'"date_label":\s*"([^"]+)".*?"list_html":\s*"(.*?)"\s*,\s*"page_link"',
-    html,
-    re.S,
-)
+print(html[:5000])
+
+raise Exception("HTML 확인용")
 
 if not matches:
     raise Exception("단어 데이터를 찾을 수 없습니다.")
