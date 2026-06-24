@@ -8,20 +8,13 @@ html = requests.get(
     headers={"User-Agent": "Mozilla/5.0"}
 ).text
 
-for keyword in [
-    "gateway",
-    "api",
-    "today",
-    "word",
-    "quiz",
-    "ajax"
-]:
-    print(f"\n===== {keyword} =====")
+matches = sorted(set(re.findall(r'[\w/\-]+\.dict(?:\?[^"\']*)?', html)))
 
-    for m in re.finditer(keyword, html, re.IGNORECASE):
-        start = max(0, m.start() - 200)
-        end = min(len(html), m.end() + 500)
-        print(html[start:end])
-        break
+print("찾은 .dict URL 후보들:")
+print("=" * 50)
 
-raise Exception("검색 완료")
+for m in matches:
+    print(m)
+
+print("=" * 50)
+print("개수:", len(matches))
