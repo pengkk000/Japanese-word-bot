@@ -8,6 +8,15 @@ headers = {
 
 html = requests.get(url, headers=headers).text
 
-print(html[:10000])
+keywords = [
+    "오늘의 일본어",
+    "だんせい",
+    "男性",
+    "がか",
+    "画家"
+]
 
-raise Exception("확인")
+for k in keywords:
+    print(k, "=>", k in html)
+
+raise Exception("검색 확인")
