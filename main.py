@@ -1,4 +1,5 @@
 import requests
+from bs4 import BeautifulSoup
 
 url = "https://search.naver.com/search.naver?where=nexearch&query=오늘의 일본어"
 
@@ -8,15 +9,10 @@ headers = {
 
 html = requests.get(url, headers=headers).text
 
-keywords = [
-    "오늘의 일본어",
-    "だんせい",
-    "男性",
-    "がか",
-    "画家"
-]
+soup = BeautifulSoup(html, "html.parser")
 
-for k in keywords:
-    print(k, "=>", k in html)
+for text in soup.stripped_strings:
+    if "男性" in text or "画家" in text:
+        print(text)
 
-raise Exception("검색 확인")
+raise Exception("확인")
