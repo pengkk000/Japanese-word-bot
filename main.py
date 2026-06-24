@@ -1,4 +1,5 @@
 import requests
+from bs4 import BeautifulSoup
 
 url = "https://search.naver.com/search.naver?where=nexearch&query=오늘의 일본어"
 
@@ -7,10 +8,12 @@ html = requests.get(
     headers={"User-Agent": "Mozilla/5.0"}
 ).text
 
-idx = html.find("男性")
+soup = BeautifulSoup(html, "html.parser")
 
-print("index =", idx)
+words = soup.select("div.word")
 
-print(html[idx-500:idx+500])
+print("개수:", len(words))
 
-raise Exception("주변 확인")
+for w in words[:10]:
+    print("-----")
+    print(w.get_text(" ", strip=True))
