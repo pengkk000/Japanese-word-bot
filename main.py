@@ -1,6 +1,4 @@
 import requests
-import html
-from bs4 import BeautifulSoup
 
 url = "https://search.naver.com/search.naver?where=nexearch&query=오늘의 일본어"
 
@@ -9,28 +7,17 @@ html_text = requests.get(
     headers={"User-Agent": "Mozilla/5.0"}
 ).text
 
-idx = html_text.find('"list_html":"')
+print("길이 =", len(html_text))
 
-if idx == -1:
-    raise Exception("list_html 못 찾음")
+for keyword in [
+    "list_html",
+    "word_item",
+    "오늘의 일본어",
+    "_sap_item",
+    "page_link"
+]:
+    print(keyword, "=>", keyword in html_text)
 
-start = idx + len('"list_html":"')
-end = html_text.find('","page_link"', start)
+print(html_text[:3000])
 
-list_html = html_text[start:end]
-
-list_html = bytes(list_html, "utf-8").decode("unicode_escape")
-list_html = html.unescape(list_html)
-
-soup = BeautifulSoup(list_html, "html.parser")
-
-items = soup.select("li.word_item")
-
-print("개수:", len(items))
-
-if len(items) == 0:
-    print(list_html[:1000])
-
-for item in items:
-    print("================================")
-    print(item.get_text(" ", strip=True))
+raise Exception("확인")
